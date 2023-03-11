@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description>After someone completes the portfolio guest book, this email will be sent automatically as a response.</description>
+        <name>Email_New_Contact_from_Portfolio_Guest_Book</name>
+        <label>Email New Contact from Portfolio Guest Book</label>
+        <locationX>176</locationX>
+        <locationY>335</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <connector>
+            <targetReference>New_Lead_Notification_via_Email_to_Record_Owner</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>body</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>$Record.Email</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>senderAddress</name>
+            <value>
+                <stringValue>staceykozak@hotmail.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Thanks for visiting my portfolio, {!$Record.FirstName}</stringValue>
+            </value>
+        </inputParameters>
+    </actionCalls>
+    <actionCalls>
+        <description>When visitor completes guest book on portfolio, this sends an email notification to record owner (Stacey)</description>
+        <name>New_Lead_Notification_via_Email_to_Record_Owner</name>
+        <label>New Lead Notification via Email to Record Owner</label>
+        <locationX>176</locationX>
+        <locationY>455</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <connector>
+            <targetReference>Thank_Visitor_on_LinkedIn</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>EmailNotificationToRecordOwner</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <stringValue>hoffzak@gmail.com</stringValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>sendRichBody</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <stringValue>Portfolio Guest Book Notification</stringValue>
+            </value>
+        </inputParameters>
+    </actionCalls>
+    <actionCalls>
+        <name>Thank_Visitor_on_LinkedIn</name>
+        <label>Thank Visitor on LinkedIn</label>
+        <locationX>176</locationX>
+        <locationY>575</locationY>
+        <actionName>NewTask</actionName>
+        <actionType>quickAction</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>OwnerId</name>
+            <value>
+                <elementReference>$Record.OwnerId</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>ActivityDate</name>
+            <value>
+                <elementReference>FourDaysAfterRecordCreated</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>contextId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>Subject</name>
+            <value>
+                <elementReference>ThanksonLinkedIn</elementReference>
+            </value>
+        </inputParameters>
+    </actionCalls>
+    <apiVersion>56.0</apiVersion>
+    <description>Portfolio Guest Book Email Auto Response and Convert Lead to Contact (V4)</description>
+    <environments>Default</environments>
+    <formulas>
+        <description>Four days after guest book entry completed</description>
+        <name>FourDaysAfterRecordCreated</name>
+        <dataType>Date</dataType>
+        <expression>{!$Record.CreatedDate+4}</expression>
+    </formulas>
+    <interviewLabel>Portfolio Guest Book Email Auto Response and Convert Lead to Contact {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Portfolio Guest Book Email Auto Response and Convert Lead to Contact</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Email_New_Contact_from_Portfolio_Guest_Book</targetReference>
+        </connector>
+        <object>Lead</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <name>body</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;p&gt;Hi&amp;nbsp;{!$Record.FirstName}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Thank you for visiting my Salesforce portfolio, and taking a few seconds to complete the guestbook page.&amp;nbsp;If you completed the feedback section, I&apos;ll be sure to read it soon.&amp;nbsp;Feedback is always appreciated.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Have we connected yet on LinkedIn?&amp;nbsp;If not, please visit my &lt;a href=&quot;https://www.linkedin.com/in/staceykozakrn/&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;&amp;gt;&amp;gt;LinkedIn Page&amp;lt;&amp;lt;&lt;/a&gt;&amp;nbsp;to send me a connection request, and a message (or give me a shout out in a post).&amp;nbsp;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;If you happen to be a recruiter, I would be very interested in setting up a introductory phone call or zoom chat.&amp;nbsp;&amp;nbsp;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Thank you for participating in this web-to-lead test.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Have a great day,&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Stacey Kozak&lt;/p&gt;</text>
+    </textTemplates>
+    <textTemplates>
+        <description>This is the email that gets sent to the new lead record owner when</description>
+        <name>EmailNotificationToRecordOwner</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;p&gt;Hi Stacey,&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;{!$Record.FirstName} {!$Record.LastName} just visited your portfolio and left a note in your guest book. &lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;This is the message:&lt;/p&gt;&lt;p&gt;{!$Record.Feedback__c}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;This is their email address:&lt;/p&gt;&lt;p&gt;{!$Record.Feedback__c}&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Have a great day :)&lt;/p&gt;</text>
+    </textTemplates>
+    <textTemplates>
+        <description>Reminder to Stacey to say thank you on LinkedIn to someone who completed portfolio guest book</description>
+        <name>ThanksonLinkedIn</name>
+        <isViewedAsPlainText>false</isViewedAsPlainText>
+        <text>&lt;p&gt;Hey Stacey,&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;{!$Record.FirstName} {!$Record.LastName} just filled out your Portfolio guest book.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;Make sure you say thanks on LinkedIn.&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;&lt;p&gt;&lt;br&gt;&lt;/p&gt;</text>
+    </textTemplates>
+</Flow>
